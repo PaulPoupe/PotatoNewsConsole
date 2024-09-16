@@ -1,13 +1,25 @@
+import delegates.Action;
+
 import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+    private final static String END_PROGRAM_MESSAGE = "Программа завершила работу";
 
-        while(true){
-            System.out.println("Введите команду:");
-            KommandReader.CompleteCommand(scanner.nextLine());
+    private static boolean isOn = true;
+    static Action onExit = (String... stringValue) -> exit();
+
+    public static void main(String[] args) {
+        try (Scanner scanner = new Scanner(System.in)) {
+            while (isOn) {
+                System.out.println("Введите команду:");
+                CommandReader.doCommand(scanner.nextLine());
+            }
         }
+    }
+
+    private static String exit() {
+        isOn = false;
+        return END_PROGRAM_MESSAGE;
     }
 }
