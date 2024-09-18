@@ -1,5 +1,6 @@
 import delegates.Action;
 import delegates.Func;
+import login.Loginner;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +13,7 @@ public class CommandReader {
 
     static {
         getCommands.put("settings.get.language", Settings.getLanguage);
+        getCommands.put("register", Loginner.onRegistration);
 
         setCommands.put("settings.set.language", Settings.setLanguage);
         setCommands.put("exit", Main.onExit);
@@ -31,5 +33,4 @@ public class CommandReader {
             System.out.println(NOT_COMMAND_CAUTION);
         }
     }
-
 }

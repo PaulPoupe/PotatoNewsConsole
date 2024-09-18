@@ -10,9 +10,10 @@ public class Main {
     static Action onExit = (String... stringValue) -> exit();
 
     public static void main(String[] args) {
+
         try (Scanner scanner = new Scanner(System.in)) {
             while (isOn) {
-                System.out.println("Введите команду:");
+                System.out.print("Введите команду: ");
                 CommandReader.doCommand(scanner.nextLine());
             }
         }
