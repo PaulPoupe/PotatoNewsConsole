@@ -5,22 +5,19 @@ import java.util.Scanner;
 public class Main {
 
     private final static String END_PROGRAM_MESSAGE = "Программа завершила работу";
-
-    private static boolean isOn = true;
     static Action onExit = (String... stringValue) -> exit();
 
     public static void main(String[] args) {
 
-        try (Scanner scanner = new Scanner(System.in)) {
-            while (isOn) {
-                System.out.print("Введите команду: ");
-                CommandReader.doCommand(scanner.nextLine());
-            }
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.print("Введите команду: ");
+            CommandReader.doCommand(scanner.nextLine());
         }
     }
 
     private static String exit() {
-        isOn = false;
+        System.exit(0);
         return END_PROGRAM_MESSAGE;
     }
 }
