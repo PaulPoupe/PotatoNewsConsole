@@ -2,35 +2,47 @@ import delegates.Action;
 import delegates.Func;
 import login.Loginner;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CommandReader {
-    private static final String NOT_COMMAND_CAUTION = "Такой команды нет!";
+    private static final String NO_SUCH_METHOD_OR_CLASS_EXCEPTION = "Такая команда не найдена";
 
-    private static final Map<String, Func> getCommands = new HashMap<>();
-    private static final Map<String, Action> setCommands = new HashMap<>();
+    public Object doCommand(String rawCommand) {
+    Command command = new Command(rawCommand);
+    Method method;
 
-    static {
-        getCommands.put("settings.get.language", Settings.getLanguage);
-        getCommands.put("register", Loginner.onRegistration);
+        try {
+            method = getMethod(command);
 
-        setCommands.put("settings.set.language", Settings.setLanguage);
-        setCommands.put("exit", Main.onExit);
+            boolean isMethodStatic = Modifier.isStatic(method.getModifiers());
+
+            Object instance = isMethodStatic ? null : Class.forName(command.getClassName()).getDeclaredConstructor().newInstance();
+
+            // Вызов метода с параметрами (или без, если их нет)
+            if (command.getMethodParams() != null && command.getMethodParams().length > 0) {
+               return method.invoke(instance, (Object[]) command.getMethodParams());
+            } else {
+               return method.invoke(instance);
+            }
+        } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException | InvocationTargetException |
+                 InstantiationException e) {
+            System.out.println(NO_SUCH_METHOD_OR_CLASS_EXCEPTION);
+        }
+        return null;
     }
 
-    public static void doCommand(String rawCommand) {
+    private static Method getMethod(Command command) throws NoSuchMethodException, ClassNotFoundException {
+       Method[] methods = Class.forName(command.getClassName()).getMethods();
 
-        Command command = new Command(rawCommand);
-
-        if (setCommands.containsKey(command.getName())) {
-            Action setCommand = setCommands.get(command.getName());
-            System.out.println(setCommand.invoke(command.getParams()));
-        } else if (getCommands.containsKey(command.getName())) {
-            Func getCommand = getCommands.get(command.getName());
-            System.out.println(getCommand.invoke());
-        } else {
-            System.out.println(NOT_COMMAND_CAUTION);
+        for (var curentMethod : methods){
+            if(curentMethod.getName().equals(command.getMethodName())){
+                return curentMethod;
+            }
         }
+        throw new NoSuchMethodException();
     }
 }
